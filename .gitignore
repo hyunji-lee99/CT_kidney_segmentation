@@ -1,0 +1,7 @@
+data/kits23
+*.npz
+venv/
+*.ipynb
+__pycache__/
+*.pt
+*.idea
