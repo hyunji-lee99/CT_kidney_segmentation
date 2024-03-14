@@ -37,8 +37,8 @@ train_df, valid_df = train_test_split(df_data[:300], test_size=0.2, random_state
 print(f"number of train set : {len(train_df)}, number of valid set : {len(valid_df)}")
 
 # save compressed dataset to npz file
-# save_dataset(train_df, input='train')
-# save_dataset(valid_df, input='valid')
+save_dataset(train_df, input='train')
+save_dataset(valid_df, input='valid')
 
 # load saved data
 # train set
@@ -60,7 +60,7 @@ DEVICE = 'cuda:3'
 # Set num of epochs
 EPOCHS = 100
 model = UNet().to(DEVICE)
-# GPU 번호 지정(0~3) cuda:0, 1 등등..
+# Select GPU number ex) cuda:0, 1 etc..
 # define optimizer
 optimizer = torch.optim.Adam([
     dict(params=model.parameters(), lr=1e-3),
@@ -81,26 +81,26 @@ torch.cuda.empty_cache()
 gc.collect()
 
 # train model
-# train_logs_list, valid_logs_list = [], []
-# best_valid_loss = np.inf
-#
-# for i in range(EPOCHS):
-#     train_loss, train_iou = train_fn(train_loader, model, optimizer, DiceLoss, DEVICE)
-#     valid_loss, valid_iou = eval_fn(valid_loader, model, DiceLoss, DEVICE)
-#     train_logs_list.append({'Dice Loss': train_loss, 'IoU': train_iou})
-#     valid_logs_list.append({'Dice Loss': valid_loss, 'IoU': valid_iou})
-#
-#     if valid_loss < best_valid_loss:
-#         torch.save(model, './SavedModel/best_model.pt')
-#         print('Model Saved')
-#         best_valid_loss = valid_loss
-#
-#     print(
-#         f"EPOCH : {i + 1} Train Loss : {train_loss} Valid Loss : {valid_loss}"
-#         f"Train IoU : {train_iou} Valid IoU : {valid_iou}")
+train_logs_list, valid_logs_list = [], []
+best_valid_loss = np.inf
+
+for i in range(EPOCHS):
+    train_loss, train_iou = train_fn(train_loader, model, optimizer, DiceLoss, DEVICE)
+    valid_loss, valid_iou = eval_fn(valid_loader, model, DiceLoss, DEVICE)
+    train_logs_list.append({'Dice Loss': train_loss, 'IoU': train_iou})
+    valid_logs_list.append({'Dice Loss': valid_loss, 'IoU': valid_iou})
+
+    if valid_loss < best_valid_loss:
+        torch.save(model, './SavedModel/best_model.pt')
+        print('Model Saved')
+        best_valid_loss = valid_loss
+
+    print(
+        f"EPOCH : {i + 1} Train Loss : {train_loss} Valid Loss : {valid_loss}"
+        f"Train IoU : {train_iou} Valid IoU : {valid_iou}")
 
 # inference
 best_model = torch.load('./SavedModel/best_model.pt')
 print_segmentation_output(valid_set, best_model, DEVICE)
-# print_logs(train_logs_list, valid_logs_list, score_name='IoU')
-# print_logs(train_logs_list, valid_logs_list, score_name='Dice Loss')
+print_logs(train_logs_list, valid_logs_list, score_name='IoU')
+print_logs(train_logs_list, valid_logs_list, score_name='Dice Loss')
