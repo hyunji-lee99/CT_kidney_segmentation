@@ -37,8 +37,8 @@ train_df, valid_df = train_test_split(df_data[:300], test_size=0.2, random_state
 print(f"number of train set : {len(train_df)}, number of valid set : {len(valid_df)}")
 
 # save compressed dataset to npz file
-save_dataset(train_df, input='train')
-save_dataset(valid_df, input='valid')
+# save_dataset(train_df, input='train')
+# save_dataset(valid_df, input='valid')
 
 # load saved data
 # train set

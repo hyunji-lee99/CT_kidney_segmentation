@@ -9,7 +9,7 @@ def print_segmentation_output(dataset, best_model, device):
         idx = np.random.randint(0, len(dataset))
         image, label = dataset[idx]
 
-        x_tensor = torch.from_numpy(image).to('cuda').unsqueeze(0)
+        x_tensor = torch.from_numpy(image).to(device).unsqueeze(0)
 
         # Predict test image
         pred_mask = best_model(x_tensor)
