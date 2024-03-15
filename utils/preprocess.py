@@ -10,7 +10,6 @@ def onehot_encoding(label, num_classes):
 
     return onehot
 
-
 def window_CT(slice, min=-260, max=340):
   # kidney HU = +20 to +45
   # best visualize = -260 to +340

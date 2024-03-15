@@ -19,14 +19,15 @@ def print_segmentation_output(dataset, best_model, device):
 
         # Convert pred_mask from `CHW` format to `HWC` format
         pred_mask = np.transpose(pred_mask, (1, 2, 0))
-        # Convert label from `CHW` format to `HWC` format
+        # Convert image, label from `CHW` format to `HWC` format
+        image = np.transpose(image, (1, 2, 0))
         label = np.transpose(label, (1, 2, 0))
 
         # 출력 전 이미지 dimension 변경
         plt.figure(figsize=(15, 5))
         plt.subplot(1, 3, 1)
         plt.title('original')
-        plt.imshow(np.transpose(image, (1, 2, 0)), cmap='gray')
+        plt.imshow(image, cmap='gray')
 
         plt.subplot(1, 3, 2)
         plt.title('ground-truth')
