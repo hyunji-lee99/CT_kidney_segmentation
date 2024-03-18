@@ -5,6 +5,7 @@ from utils.save_dataset import save_dataset
 import numpy as np
 from data_loader.dataloader import SegmentationDataset
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 from models.UNet import UNet
 import torch
 import gc
@@ -13,6 +14,9 @@ from eval import eval_fn
 from losses.SoftDiceLoss import SoftDiceLoss
 from losses.DiceLoss import DiceLoss
 from inference import print_segmentation_output, print_logs
+
+# for tensorboard
+writer = SummaryWriter()
 
 # load kits23 dataset
 DATA_DIR = './data/kits23/dataset/'
@@ -90,6 +94,12 @@ for i in range(EPOCHS):
     train_logs_list.append({'Dice Loss': train_loss, 'IoU': train_iou})
     valid_logs_list.append({'Dice Loss': valid_loss, 'IoU': valid_iou})
 
+    # tensorboard
+    writer.add_scalar("Loss/train", train_loss, i)
+    writer.add_scalar("Loss/valid", valid_loss, i)
+    writer.add_scalar("IoU/train", train_loss, i)
+    writer.add_scalar("IoU/valid", valid_loss, i)
+
     if valid_loss < best_valid_loss:
         torch.save(model, './SavedModel/best_model.pt')
         print('Model Saved')
@@ -99,6 +109,9 @@ for i in range(EPOCHS):
         f"EPOCH : {i + 1} Train Loss : {train_loss} Valid Loss : {valid_loss}"
         f"Train IoU : {train_iou} Valid IoU : {valid_iou}")
 
+writer.flush()
+
+writer.close()
 # inference
 best_model = torch.load('./SavedModel/best_model.pt')
 print_segmentation_output(valid_set, best_model, DEVICE)

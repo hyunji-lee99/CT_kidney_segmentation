@@ -1,6 +1,5 @@
 import torch.nn.functional as F
 import torch
-import numpy as np
 
 def DiceLoss(predicted, target, smooth=1e-10):
     predicted = F.softmax(predicted, dim=1)

@@ -1,8 +1,8 @@
 import torch.nn as nn
-from losses import SoftDiceLoss
+from losses import DiceLoss
 
 def DiceCELoss(predicted, target, lambda_dice=1.0, lambda_ce=1.0):
-    diceloss, iou = SoftDiceLoss(predicted, target)
+    diceloss, iou = DiceLoss(predicted, target)
 
     # softmax가 cross entropy 내부에서 발생하기 때문에, 기존 dice loss는 세 가지 클래스에 대한 softmax를 수행하는 반면에 cross entropy는
     # 2가지 클래스에 대해서만 softmax를 수행하므로 diceceloss를 사용해도 loss는 오히려 더 줄어들 수 있다.

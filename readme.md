@@ -1,6 +1,5 @@
 ## Abdominal CT based Axial 2D Kidney Segmentation Pytorch : Implementation of U-Net
 
----
 
 ![화면 캡처 2024-03-15 114217](https://github.com/hyunji-lee99/CT_kidney_segmentation/assets/58133945/6040156a-9497-4e13-8449-895619e57f0e)
 
@@ -16,7 +15,6 @@ Abdominal CT Axial based left kidney, right kidney segmentaion Unet model.
 
 ## Dataset (KiTS 23)
 
----
 
 ![Untitled](https://github.com/hyunji-lee99/CT_kidney_segmentation/assets/58133945/b21dfca1-d6ac-4e26-9c43-e0bc54e3c004) |![Untitled1](https://github.com/hyunji-lee99/CT_kidney_segmentation/assets/58133945/10c29ffd-31fe-4ee9-bd2f-b09c10672a5c)
 --- | --- | 
@@ -41,7 +39,6 @@ kits23_download_data
 
 ## Model Outputs
 
----
 
 ![prediction_1](https://github.com/hyunji-lee99/CT_kidney_segmentation/assets/58133945/61b71228-2382-4f35-9280-35d9e114e7fe)
 ![prediction_2](https://github.com/hyunji-lee99/CT_kidney_segmentation/assets/58133945/c7dfab44-168c-4e3a-8ab3-bf2acc47d459)
@@ -58,7 +55,6 @@ kits23_download_data
 
 ## Experiments Table
 
----
 
 Exp 1. optimizer = Adam / lr = 0.0001 / loss function = Dice Loss / Batch Size =16 / Epoch = 100
 

@@ -18,12 +18,12 @@ def print_segmentation_output(dataset, best_model, device):
         # x=np.argmax(pred_mask, axis=0)
 
         # Convert pred_mask from `CHW` format to `HWC` format
-        pred_mask = np.transpose(pred_mask, (1, 2, 0))
-        # Convert image, label from `CHW` format to `HWC` format
-        image = np.transpose(image, (1, 2, 0))
-        label = np.transpose(label, (1, 2, 0))
-
         # 출력 전 이미지 dimension 변경
+        pred_mask = np.transpose(pred_mask, (1, 2, 0))
+        # Convert label from `CHW` format to `HWC` format
+        label = np.transpose(label, (1, 2, 0))
+        image = np.transpose(image, (1, 2, 0))
+
         plt.figure(figsize=(15, 5))
         plt.subplot(1, 3, 1)
         plt.title('original')
@@ -44,8 +44,8 @@ def print_logs(train_logs_list, valid_logs_list, score_name):
     valid_logs_df = pd.DataFrame(valid_logs_list)
     train_logs_df.transpose()
     plt.figure(figsize=(20, 8))
-    plt.plot(train_logs_df.index.tolist(), train_logs_df.score_name.tolist(), lw=3, label='Train')
-    plt.plot(valid_logs_df.index.tolist(), valid_logs_df.score_name.tolist(), lw=3, label='Valid')
+    plt.plot(train_logs_df.index.tolist(), train_logs_df[score_name].tolist(), lw=3, label='Train')
+    plt.plot(valid_logs_df.index.tolist(), valid_logs_df[score_name].tolist(), lw=3, label='Valid')
     plt.xlabel('Epochs', fontsize=21)
     plt.ylabel(f'{score_name} Score', fontsize=21)
     plt.ylim([-0.5, 1.5])
