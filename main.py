@@ -5,18 +5,10 @@ from utils.save_dataset import save_dataset
 import numpy as np
 from data_loader.dataloader import SegmentationDataset
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
 from models.UNet import UNet
 import torch
-import gc
-from train import train_fn
-from eval import eval_fn
-from losses.SoftDiceLoss import SoftDiceLoss
-from losses.DiceLoss import DiceLoss
-from inference import print_segmentation_output, print_logs
-
-# for tensorboard
-writer = SummaryWriter()
+from train import train
+from inference import inference
 
 # load kits23 dataset
 DATA_DIR = './data/kits23/dataset/'
@@ -59,61 +51,33 @@ train_set = SegmentationDataset(data_image_array=concat_train_image_npz, data_la
 valid_set = SegmentationDataset(data_image_array=concat_valid_image_npz, data_label_array=concat_valid_label_npz,
                                 data_idx_array=concat_valid_index_npz, augmentations=None)
 
-# set hyperparameter
-DEVICE = 'cuda:3'
-# Set num of epochs
-EPOCHS = 100
-model = UNet().to(DEVICE)
-# Select GPU number ex) cuda:0, 1 etc..
-# define optimizer
-optimizer = torch.optim.Adam([
-    dict(params=model.parameters(), lr=1e-3),
-])
-
-optimizer_w = torch.optim.AdamW([
-    dict(params=model.parameters(), lr=1e-3),
-])
-
 # define data loader
 train_loader = DataLoader(train_set, batch_size=16, shuffle=True)
 valid_loader = DataLoader(valid_set, batch_size=1, shuffle=False)
 print(f"total number of batches in train loader : {len(train_loader)}")
 print(f"total number of batches in valid loader : {len(valid_loader)}")
 
-# empty cache for preventing cuda out of memory issue
-torch.cuda.empty_cache()
-gc.collect()
-
+DEVICE = 'cuda:3'
 # train model
-train_logs_list, valid_logs_list = [], []
-best_valid_loss = np.inf
+# exp1 : loss function -> Dice Loss / optimizer = Adam
+print('-'*15+' experiment 1 '+'-'*15)
+train_logs_list_1, valid_logs_list_1 = train(train_loader, valid_loader, 'Adam', 'DiceLoss', exp_num=1)
+inference(valid_set, 1, train_logs_list_1, valid_logs_list_1, DEVICE)
 
-for i in range(EPOCHS):
-    train_loss, train_iou = train_fn(train_loader, model, optimizer, DiceLoss, DEVICE)
-    valid_loss, valid_iou = eval_fn(valid_loader, model, DiceLoss, DEVICE)
-    train_logs_list.append({'Dice Loss': train_loss, 'IoU': train_iou})
-    valid_logs_list.append({'Dice Loss': valid_loss, 'IoU': valid_iou})
 
-    # tensorboard
-    writer.add_scalar("Loss/train", train_loss, i)
-    writer.add_scalar("Loss/valid", valid_loss, i)
-    writer.add_scalar("IoU/train", train_loss, i)
-    writer.add_scalar("IoU/valid", valid_loss, i)
+# exp2 : loss function -> Dice CE Loss / optimizer = Adam
+print('-'*15+' experiment 2 '+'-'*15)
+train_logs_list_2, valid_logs_list_2 = train(train_loader, valid_loader, 'Adam', 'DiceCELoss',  exp_num=2)
+inference(valid_set, 2, train_logs_list_2, valid_logs_list_2, DEVICE)
 
-    if valid_loss < best_valid_loss:
-        torch.save(model, './SavedModel/best_model.pt')
-        print('Model Saved')
-        best_valid_loss = valid_loss
 
-    print(
-        f"EPOCH : {i + 1} Train Loss : {train_loss} Valid Loss : {valid_loss}"
-        f"Train IoU : {train_iou} Valid IoU : {valid_iou}")
+# exp3 : loss function -> Dice Loss / optimizer = AdamW
+print('-'*15+' experiment 3 '+'-'*15)
+train_logs_list_3, valid_logs_list_3 = train(train_loader, valid_loader, 'AdamW', 'DiceLoss', exp_num=3)
+inference(valid_set, 3, train_logs_list_3, valid_logs_list_3, DEVICE)
 
-writer.flush()
 
-writer.close()
-# inference
-best_model = torch.load('./SavedModel/best_model.pt')
-print_segmentation_output(valid_set, best_model, DEVICE)
-print_logs(train_logs_list, valid_logs_list, score_name='IoU')
-print_logs(train_logs_list, valid_logs_list, score_name='Dice Loss')
+# exp4 : loss function -> Dice CE Loss / optimizer = AdamW
+print('-'*15+' experiment 4 '+'-'*15)
+train_logs_list_4, valid_logs_list_4 = train(train_loader, valid_loader, 'AdamW','DiceCELoss', exp_num=4)
+inference(valid_set, 4, train_logs_list_4, valid_logs_list_4, DEVICE)

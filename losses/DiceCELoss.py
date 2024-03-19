@@ -1,5 +1,5 @@
 import torch.nn as nn
-from losses import DiceLoss
+from losses.DiceLoss import DiceLoss
 
 def DiceCELoss(predicted, target, lambda_dice=1.0, lambda_ce=1.0):
     diceloss, iou = DiceLoss(predicted, target)

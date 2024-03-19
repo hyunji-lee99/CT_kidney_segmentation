@@ -2,9 +2,10 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 import torch
+import os
 from utils.postprocess import colour_code_segmentation
 
-def print_segmentation_output(dataset, best_model, device):
+def print_segmentation_output(dataset, best_model, exp_num, device):
     for i in range(10):
         idx = np.random.randint(0, len(dataset))
         image, label = dataset[idx]
@@ -36,10 +37,13 @@ def print_segmentation_output(dataset, best_model, device):
         plt.subplot(1, 3, 3)
         plt.title("prediction")
         plt.imshow(colour_code_segmentation(np.argmax(pred_mask, axis=2)))
-
+        if not os.path.exists(f'result/exp{exp_num}'):
+            os.mkdir(f'result/exp{exp_num}')
+        plt.savefig(f'result/exp{exp_num}/prediction_{i}.png')
         plt.show()
 
-def print_logs(train_logs_list, valid_logs_list, score_name):
+
+def print_logs(train_logs_list, valid_logs_list, exp_num, score_name):
     train_logs_df = pd.DataFrame(train_logs_list)
     valid_logs_df = pd.DataFrame(valid_logs_list)
     train_logs_df.transpose()
@@ -51,5 +55,22 @@ def print_logs(train_logs_list, valid_logs_list, score_name):
     plt.ylim([-0.5, 1.5])
     plt.title(f'{score_name} Score Plot', fontsize=21)
     plt.grid()
-    plt.savefig(f'result/{score_name}_score_plot.png')
+    if not os.path.exists(f'result/exp{exp_num}'):
+        os.mkdir(f'result/exp{exp_num}')
+    plt.savefig(f'./result/exp{exp_num}/{score_name}_score_plot.png')
     plt.show()
+
+    # return best score (%)
+    if score_name == 'IoU':
+        return round(max(valid_logs_df[score_name].tolist())*100, 2)
+    elif score_name == 'Loss':
+        return round((1.-min(valid_logs_df[score_name].tolist()))*100, 2)
+
+
+def inference(valid_set, exp_num, train_logs_list, valid_logs_list, device):
+    best_model = torch.load(f'./SavedModel/best_model_exp{exp_num}.pt')
+    print_segmentation_output(valid_set, best_model, exp_num, device)
+    best_iou = print_logs(train_logs_list, valid_logs_list, exp_num, score_name='IoU')
+    best_dsc = print_logs(train_logs_list, valid_logs_list, exp_num, score_name='Loss')
+
+    print(f"best score 1 : DSC {best_dsc}, IoU {best_iou}")
