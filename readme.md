@@ -64,4 +64,4 @@ Exp 3. optimizer = AdamW / lr = 0.0001 / loss function = Dice Loss / Batch Size 
 
 Exp 4. optimizer = AdamW / lr = 0.0001 / loss function = Dice CE Loss / Batch Size =16 / Epoch = 100
 
-*To Be Uploaded*
+![화면 캡처 2024-03-19 165253](https://github.com/hyunji-lee99/CT_kidney_segmentation/assets/58133945/ff7ef83d-88c9-45e4-abf5-851fe60c541e)

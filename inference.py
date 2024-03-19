@@ -73,4 +73,4 @@ def inference(valid_set, exp_num, train_logs_list, valid_logs_list, device):
     best_iou = print_logs(train_logs_list, valid_logs_list, exp_num, score_name='IoU')
     best_dsc = print_logs(train_logs_list, valid_logs_list, exp_num, score_name='Loss')
 
-    print(f"best score 1 : DSC {best_dsc}, IoU {best_iou}")
+    print(f"best score {exp_num} : DSC {best_dsc}, IoU {best_iou}")
